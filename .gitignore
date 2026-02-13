@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+client/node_modules/
+
+# Logs and Data
+debug_quota.log
+api_result.json
+api_result.txt
+test_api.ps1
+fetch_quota.ps1.log
+
+# Build outputs
+client/dist/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Research Artifacts & Sensitive Data
+auth_status.json
+decoded_status.txt
+user_status.txt
+keys.txt
+state_copy.db
+usage_data.json
+leveldb_dump/
+
+# Reference Code (External)
+extension.ts
+platform_strategies.ts
+process_finder.ts
+quota_manager.ts
