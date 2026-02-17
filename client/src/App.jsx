@@ -109,7 +109,7 @@ function App() {
                                     <div>
                                         <div className="model-name">{model.label}</div>
                                         <div className="model-reset">
-                                            {resetDate ? `Resets: ${resetDate.toLocaleTimeString()}` : 'No limit'}
+                                            {resetDate ? `Resets: ${resetDate.toLocaleString()}` : 'No limit'}
                                         </div>
                                     </div>
                                     <div style={{ width: '40%', textAlign: 'right' }}>
