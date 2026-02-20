@@ -99,7 +99,7 @@ function App() {
                     <div className="card-title">Model Quotas</div>
                     <div className="models-list">
                         {models.map((model, idx) => {
-                            const remaining = model.quotaInfo?.remainingFraction ?? 1;
+                            const remaining = model.quotaInfo?.remainingFraction ?? 0;
                             const resetDate = model.quotaInfo?.resetTime ? new Date(model.quotaInfo.resetTime) : null;
 
                             if (!model.isRecommended) return null; // Filter mostly extraneous models
