@@ -34,6 +34,18 @@ function App() {
         return () => clearInterval(interval);
     }, []);
 
+    const getDurationString = (targetDate) => {
+        const now = new Date();
+        const diff = targetDate - now;
+        if (diff <= 0) return 'Ready';
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        if (hours > 24) return `${Math.floor(hours / 24)}d ${hours % 24}h`;
+        return `${hours}h ${minutes}m`;
+    };
+
     if (loading && !data) return (
         <div className="container">
             <div className="loading">
@@ -57,9 +69,16 @@ function App() {
 
     const userStatus = data?.userStatus;
     const planInfo = userStatus?.planStatus?.planInfo;
+
+    // Prompt Credits
     const availableCredits = userStatus?.planStatus?.availablePromptCredits || 0;
     const monthlyCredits = planInfo?.monthlyPromptCredits || 1;
     const creditPercent = (availableCredits / monthlyCredits) * 100;
+
+    // Flow Credits
+    const availableFlow = userStatus?.planStatus?.availableFlowCredits || 0;
+    const monthlyFlow = planInfo?.monthlyFlowCredits || 1;
+    const flowPercent = (availableFlow / monthlyFlow) * 100;
 
     const models = userStatus?.cascadeModelConfigData?.clientModelConfigs || [];
 
@@ -73,7 +92,7 @@ function App() {
             </div>
 
             <div className="grid">
-                {/* Credits Card */}
+                {/* Prompt Credits Card */}
                 <div className="card">
                     <div className="card-title">Prompt Credits</div>
                     <div className="stat-value">{availableCredits.toLocaleString()}</div>
@@ -82,6 +101,19 @@ function App() {
                         <div
                             className="progress-bar"
                             style={{ width: `${creditPercent}%`, backgroundColor: creditPercent < 20 ? 'var(--danger-color)' : 'var(--accent-color)' }}
+                        ></div>
+                    </div>
+                </div>
+
+                {/* Flow Credits Card */}
+                <div className="card">
+                    <div className="card-title">Flow Credits</div>
+                    <div className="stat-value">{availableFlow.toLocaleString()}</div>
+                    <div className="stat-sub">of {monthlyFlow.toLocaleString()} monthly</div>
+                    <div className="progress-container">
+                        <div
+                            className="progress-bar"
+                            style={{ width: `${flowPercent}%`, backgroundColor: flowPercent < 20 ? 'var(--danger-color)' : 'var(--accent-color)' }}
                         ></div>
                     </div>
                 </div>
@@ -95,12 +127,13 @@ function App() {
                 </div>
 
                 {/* Models Card */}
-                <div className="card" style={{ gridColumn: 'span 2' }}>
+                <div className="card" style={{ gridColumn: '1 / -1' }}>
                     <div className="card-title">Model Quotas</div>
                     <div className="models-list">
                         {models.map((model, idx) => {
                             const remaining = model.quotaInfo?.remainingFraction ?? 0;
                             const resetDate = model.quotaInfo?.resetTime ? new Date(model.quotaInfo.resetTime) : null;
+                            const timeRemaining = resetDate ? getDurationString(resetDate) : '';
 
                             if (!model.isRecommended) return null; // Filter mostly extraneous models
 
@@ -109,7 +142,9 @@ function App() {
                                     <div>
                                         <div className="model-name">{model.label}</div>
                                         <div className="model-reset">
-                                            {resetDate ? `Resets: ${resetDate.toLocaleString()}` : 'No limit'}
+                                            {resetDate ?
+                                                <span>Resets: {resetDate.toLocaleString()} <span style={{ color: 'var(--accent-color)' }}>({timeRemaining})</span></span>
+                                                : 'No limit'}
                                         </div>
                                     </div>
                                     <div style={{ width: '40%', textAlign: 'right' }}>
